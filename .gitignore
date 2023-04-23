@@ -5,3 +5,5 @@
 bg_imgsel.debug.hta
 bg_imgsel.hta
 x64
+version.h
+version_check.txt
