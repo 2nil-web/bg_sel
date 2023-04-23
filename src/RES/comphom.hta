@@ -1,0 +1,167 @@
+<html> 
+<head> 
+<title>CodeGen For Helpomatic</title> 
+ 
+<HTA:APPLICATION  
+     ID="objHTAHelpomatic" 
+     APPLICATIONNAME="HTAHelpomaticCodeGen" 
+     SCROLL="yes" 
+     SINGLEINSTANCE="yes" 
+     WINDOWSTATE="maximize" 
+> 
+</head> 
+ 
+<SCRIPT Language="VBScript"> 
+Public intLeft,intTop 
+Sub Window_Onload 
+ 
+vertsz=700 
+hortsz=800 
+        strComputer = "." 
+        Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2") 
+        Set colItems = objWMIService.ExecQuery("Select * From Win32_DesktopMonitor") 
+        For Each objItem in colItems 
+            intHorizontal = objItem.ScreenWidth 
+            intVertical = objItem.ScreenHeight 
+        Next 
+        intLeft = (intHorizontal - hortsz) / 2 
+        intTop = (intVertical - vertsz) / 2 
+        window.resizeTo hortsz,vertsz 
+'        window.moveTo intLeft, intTop 
+        SampleFiled.value="strScript & "&chr(34)&"&nbsp;&nbsp;&nbsp;<input id=runbutton  class='button' type='button' value='Run Button' name='run_button'  onClick='RunScript'>"+chr(34) 
+        HTMLcode.value=chr(34)+"<textarea name='BasicTextArea' rows='5' cols='35'></textarea>"+chr(34) 
+        description.value=chr(34)+"Description of Program"+chr(34) 
+        EntryField.value="<option value="&chr(34)&NameOfScript.value&chr(34)&">"&NameOfScript.value&"</option>" 
+End Sub 
+ 
+sub gencode 
+         
+strtxt=BasicTextArea.value 
+   for i = 1 to len (strtxt) 
+    char=mid(strtxt,i,1) 
+    strans=strans+cStr(asc(char))+"," 
+   next 
+strtxt=strans 
+    char="" 
+    i=1:flag=0 
+    strans="        strNub="+chr(34) 
+  while i<len(strtxt)-1   
+    while mid(strtxt,i,1)<>"," 
+    char=char+mid(strtxt,i,1) 
+    i=i+1:if i mod 80 = 0 then flag=1 
+    wend 
+    i=i+1:if i mod 80 = 0 then flag=1 
+    strans=strans+char+"," 
+    if flag=1 then  
+    strans=strans+chr(34)+vbcrlf+"        strNub=strNub+"+chr(34) 
+    flag=0 
+    end if 
+    char="" 
+  wend 
+  strans=strans+chr(34)+vbcrlf+vbcrlf 
+  dim hack(4) 
+  hack(1)="":hack(2)="":hack(3)="":hack(4)="" 
+  if BasicCheckBox1.Checked then hack(1)="'" 
+  if BasicCheckBox2.Checked then hack(2)="'" 
+  if BasicCheckBox3.Checked then hack(3)="'" 
+  if BasicCheckBox4.Checked then hack(4)="'" 
+  if wherput.checked then 
+  strforcopy="strScript" 
+  else 
+  strforcopy="strSub" 
+  end if 
+     
+      
+ 
+strextra="    If D1.Value = "+chr(34)+NameOfScript.value+chr(34)+" Then"&vbcrlf 
+strextra=strextra+"        'Define Disabled Run Buttons ***********************"&vbcrlf 
+strextra=strextra+"        "+hack(1)+"Show_Example_Button.Disabled = True"&vbcrlf 
+strextra=strextra+"        "+hack(2)+"Copy_HTML_Button.Disabled = True"&vbcrlf 
+strextra=strextra+"        "+hack(3)+"Reset_Button.Disabled = True"&vbcrlf 
+strextra=strextra+"        "+hack(4)+"Copy_Code_Button.Disabled = True"&vbcrlf 
+strextra=strextra+"        '***************************************************"&vbcrlf 
+strextra=strextra+vbcrlf 
+strextra=strextra+"        'HTML Code Box**(fields and so on)******************"&vbcrlf 
+strextra=strextra+"        strScript = "&HTMLcode.value&vbcrlf 
+strextra=strextra+"        '***************************************************"&vbcrlf 
+strextra=strextra+vbcrlf 
+strextra=strextra+"        'Sample Field*-(run button and fields)**************"&vbcrlf 
+strextra=strextra+"        strExample = "&SampleFiled.value&vbcrlf 
+strextra=strextra+"        '***************************************************"&vbcrlf 
+strextra=strextra+vbcrlf         
+strextra=strextra+"        'Description Field**********************************"&vbcrlf 
+strextra=strextra+"        strDescription = "+description.value+vbcrlf 
+strextra=strextra+"        '***************************************************"&vbcrlf 
+strextra=strextra+vbcrlf   
+strextra=strextra+"        'Subroutine Code Box (program lising)***************"&vbcrlf 
+ 
+    strend="        'Generates code listing*****************************"&vbcrlf 
+    strend=strend+"        char="&chr(34)&chr(34)&vbcrlf 
+    strend=strend+"        i=1"&vbcrlf 
+    strend=strend+"        "&strforcopy&"="&chr(34)&chr(34)&vbcrlf 
+    strend=strend+"        while i<len(strNub)-1  "&vbcrlf 
+    strend=strend+"        while mid(strNub,i,1)<>"&chr(34)&","&chr(34)&vbcrlf 
+    strend=strend+"        char=char+mid(strNub,i,1)"&vbcrlf 
+    strend=strend+"        i=i+1"&vbcrlf 
+    strend=strend+"        wend"&vbcrlf 
+    strend=strend+"        i=i+1"&vbcrlf 
+    strend=strend+"        "&strforcopy&"="&strforcopy&"+chr(char)"&vbcrlf    
+    strend=strend+"        char="&chr(34)&chr(34)&vbcrlf 
+    strend=strend+"        wend"&vbcrlf 
+    strend=strend+"    End If"&vbcrlf 
+     
+Answer.value=strextra+strans+strend 
+ 
+end sub 
+ 
+sub repopulate 
+        EntryField.value="<option value="&chr(34)&NameOfScript.value&chr(34)&">"&NameOfScript.value&"</option>" 
+end sub 
+ 
+ 
+Sub Resetme 
+    Location.Reload(True) 
+End Sub 
+ 
+Sub copyclip(strval) 
+    if strval=1 then strCopy = Answer.Value 
+    if strval=2 then strCopy = EntryField.value 
+    document.parentwindow.clipboardData.SetData "text", strCopy End Sub 
+ 
+</SCRIPT> 
+<body bgcolor="#e8e8e8"> 
+<table> 
+<tr><td> 
+Script Name: 
+</td> 
+<td> 
+<input type="text" size=10 name="NameOfScript" value="TestScript" onChange="repopulate"> Enable Buttons: 
+<input type="checkbox"name="BasicCheckbox1"value="1" checked> Show_Example <input type="checkbox"name="BasicCheckbox2"value="1" checked> Copy_HTML <input type="checkbox"name="BasicCheckbox3"value="1" checked> Reset <input type="checkbox"name="BasicCheckbox4"value="1" checked> Copy_Code 
+ 
+</td> 
+</tr> 
+<tr> 
+<td> 
+HTML Field: 
+</td> 
+<td> 
+<input type="text" size=99 name="HTMLcode" value=""> </td></tr> <tr> <td> Sample Field: 
+</td> 
+<td> 
+<input type="text" size=99 name="SampleFiled" value=""> </td></tr> <tr> <td> 
+Description: 
+</td> 
+<td> 
+<textarea name="description" rows=5 cols=75></textarea> </td></tr></table> <table > <tr><td> Paste Program Here: 
+</td><td></td><td></td></tr> 
+<tr><td> 
+<textarea name="BasicTextArea" rows="12" cols="75"></textarea> </td> <td> <input  class="button" type="button" value="ResetForm" name="run_button4"  onClick="Resetme"><br><br> <input  class="button" type="button" value="Run" name="run_button"  onClick="gencode"><br><br> <input type="checkbox" name="wherput"><font size=2>Put listing in HTML Code area intead of Subroutine Code area (HTML field above is ignored)</font> 
+ 
+</td></tr> 
+<tr><td> 
+<textarea name="Answer" rows="12" cols="75"></textarea> </td><td> <input  class="button" type="button" value="Copy" name="run_button3"  onClick="copyclip(1)"><br><br><br> 
+ 
+</td></tr> 
+<tr><td> 
+<input type="text" name="EntryField" size=95 > </td><td> <input  class="button" type="button" value="Copy" name="run_button2"  onClick="copyclip(2)"> </td></tr></table> </body> </html> 
+ 

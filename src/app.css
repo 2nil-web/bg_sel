@@ -1,0 +1,73 @@
+
+
+label {
+  border: 1px dotted;
+}
+
+.image_button {
+  position: absolute;
+  top: 15px;
+  margin-left: 30px;
+  outline:none;
+  margin:0;
+  padding:0;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  display: none;
+}
+
+.image_button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+#cnfDiv {
+  position:absolute;
+  left:1px;
+  top:1px;
+  width:430px;
+  height:285px;
+  display:none;
+  background-color:#FFF;
+  z-index:10;
+  padding:4px;
+}
+
+/* Pour corriger le dysfonctionnement d'internet explorer 9 avec les SVG */
+.ie9 img[src$=.svg] {
+  width:100%;
+}
+
+  @media screen and -ms-high-contrast active,-ms-high-contrast none {
+    img[src$=.svg] {
+    width:100%;
+  }
+}
+
+.info_bg {
+  position:relative;
+  width: 90%;
+  top: -60px;
+  display:none;
+  //background-color: rgba(173,216,230, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+}
+
+button {
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out, transform 150ms ease;
+}
+
+/*
+body,div {
+  background-image: url('moirure2.png');
+}
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-image: url('moirure2.png');
+  }
+}
+*/

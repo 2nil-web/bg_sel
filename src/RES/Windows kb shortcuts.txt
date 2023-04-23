@@ -1,0 +1,28 @@
+Open a recently closed tab in your internet broswer: Ctrl + Shift "T"
+Switch between open windows: Alt + Tab
+Minimize everything and show desktop: (or between the desktop and Start screen in Windows 8.1): Windows Key + "D" 
+Minimize window: Windows Key + Down Arrow
+Maximize window: Windows Key + Up Arrow
+Bold: Ctrl + "B"
+Paste selected Item: Ctrl + "V"
+Copy selected Item: Ctrl + "C"
+Cut selected Item: Ctrl + "X" 
+Underline: Ctrl + "U"
+Italicize: Ctrl + "I" 
+Undo an action: Ctrl + "Z"
+Print: Ctrl + "P"
+Select all: Ctrl + "A"
+Take screenshot: PrtScr
+Take screenshot of active screen: Ctrl + Alt + PrtScr
+Delete permanently: Shift + Delete
+Open properties for selected item: Alt + Enter
+Close current window: Alt + F4
+Open the Start Menu: Ctrl + Esc
+Flip screen rotation: Ctrl + Alt + any arrow key
+Open Task Manager: Ctrl + Shift + Esc
+Lock your PC or switch users: Windows Key + "L"
+Choose a presentation display mode: Windows Key + "P"
+Zoom in and out: Windows Key and plus or minus sign
+Search for files and folders: Windows Key + "F"
+Help: Windows Key + "F1"
+Quick system access menu: Windows Key + "X"

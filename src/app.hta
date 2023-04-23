@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=9" />
+      <title>Reject background images</title>
+      <link rel="stylesheet" href="app.css">
+      <script type="text/javascript" src="common.js"></script>
+      <script type="text/javascript" src="app_head.js"></script>
+      <!-- hta app ==> https://docs.microsoft.com/en-us/previous-versions/ms536495(v%3Dvs.85)-->
+      <hta:application
+         id="bg_imgsel"
+         applicationname="Reject background image"
+         contextmenu="no"
+         border="thin"
+         maximizebutton="no"
+         singleinstance="yes"
+         scroll="no"
+         icon="app.ico"
+         />
+   </head>
+   <body>
+      <div id='cnfDiv'>
+         <fieldset>
+            <legend> Dimensions of the thumbnail display frame</legend>
+            <input style="width: 40px;" id='thW' type="number" min="64" max="512" />pixels by 
+            <input style="width: 40px;" id='thH' type="number" min="64" max="512" />pixels
+            <button onclick="thW.value=320; thH.value=180;" style="margin-left: 20px;" >
+              Reset to default size
+            </button><br><br>
+         </fieldset>
+         <div style="text-align: center; margin: 10px; 0px; 10px; 0px;">
+            <input type="checkbox" id="thuBord">
+            <label for="thuBord" >Thumbnails have border</label>
+            <label for="darkMode" style="margin-left:80px;">Dark mode</label>
+            <input type="checkbox" id="darkMode">
+         </div>
+
+         <fieldset style="text-align: center;" >
+            <legend>How to make buttons appear</legend>
+            <input type="radio" id="butsOnOver" name="clickOrOver" checked>
+            <label for="butsOnOver">On mouse over</label>
+            <label for="butsOnClck" style="margin-left:30px;">On mouse click</label>
+            <input type="radio" id="butsOnClck" name="clickOrOver">
+         </fieldset>
+
+         <fieldset>
+            <legend> Folder for rejected pictures</legend>
+            <input type="text" id='rejFld' style="width: 300px;">
+            <button onclick="setRejFolder();" style="margin-left: 10px;" >Browse</button>
+         </fieldset>
+         <br>
+         <button onclick="okCnfDiv();"   style="width: 25%; margin-left: 15%;">Ok</button>
+         <button onclick="closeCnfDiv();"style="width: 25%; margin-left: 20%;">Cancel</button>
+      </div>
+      <script src="app_body.js"></script>
+   </body>
+</html>
+

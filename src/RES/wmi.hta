@@ -1,0 +1,535 @@
+<HTML>
+<HEAD>
+<HTA:APPLICATION ID="ohta"
+APPLICATIONNAME="SaveAsDemo"
+BORDER="thin"
+BORDERSTYLE="normal"
+CAPTION="yes"
+ICON=""
+MAXIMIZEBUTTON="yes"
+MINIMIZEBUTTON="yes"
+SHOWINTASKBAR="yes"
+SINGLEINSTANCE="yes"
+SYSMENU="yes"
+VERSION="1.0"
+WINDOWSTATE="normal">
+
+<TITLE> &nbsp;&nbsp; &lt&lt HTA App to Show Windows Management Instrumentation (WMI) Class Documentation... &gt&gt </TITLE>
+<!-- Discription Block --------------------------
+'
+' Title: Enumerate the WMI Classes and Properties
+'
+' Description: this demo will produce a "combobox" to show wmi classes.
+' The idea is to select a class, and get wmi documentation
+' about the methods and properties of that class...
+'
+' Author: jwarrington*NoSteekinSpam*@worldnet.att.net
+' Website: http://home.att.net/~wshvbs/index.htm
+'
+' Usage: Use at you own risk, tested on win98se...
+'
+' --- Acknowledgments ----------------------------
+' The "original" code showing "how to" do this was posted on the vbScript
+' newsgroup, by Dr. Tobias Weltner (author of wsh Scripting Secrets),
+' on or about 18 November 2000. The code was copywrited by him.
+' This is a translation of Dr. Weltner's code into (American) English,
+' plus his code was reworked somewhat and consolidated, to present the
+' results in an "hta" format...
+' --- end of acknowledgment ----------------------
+'
+' --- Revision History ---------------------------
+' 06Jan02: initial attempt...
+' 09Jan02: some further Deutsch-zu-Englisch translations...
+' also, change doc window from open.window -to- ShowModalDialog...
+' 16Apr02: decided NOT to use document.getElementById("myDiv").innerHTML
+' syntax (too many doc.all occurances)...
+' 30Aug02: store temp html in shell/environment/process/temp location,
+' instead of c:\windows\temp\, to be a little more politically correct...
+' 08Apr03: sorted the combo (oops, the wmi classes in the select element)...
+' --- end of Revisions ---------------------------
+'
+' --- end of description block ------------------- -->
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function jsSortClasses (saOptions) {
+// using javascript to sort the wmi classes,
+// as vbScript doesn't have this capability (shame on you, Microsoft!)...
+// alert("entering: JavaSort");
+
+var jsArray = new VBArray(saOptions).toArray(); // vbScript "safearray" to js array
+// alert(jsArray[1].toString()); // verify that the vb array conversion was successful
+
+jsArray.sort(); // sort the array
+// alert(jsArray.length); // verify all the elements made it...
+
+// at this point one would expect to go back to vbScript to finish...
+// ALAS, that was not to be, there is no way (ugh!) to convert a js array BACK
+// to a vbScript array. And so, we will have to finish off the job in js...
+
+// construct the select element header...
+var sInsertHTML = "<select id='selClass' onChange='selChangeEvent()'>"
+// add the select element items (options) to the element...
+for (var i = 0; i < jsArray.length; i++)
+sInsertHTML = sInsertHTML + "<option value='" + jsArray + "' >" + jsArray;
+// finish off the select element, (add end tag)...
+sInsertHTML = sInsertHTML + "</select>";
+
+// finally, insert all this stuff into the page...
+// var oList = document.getElementById("clsListing")
+// oList.innerHTML = sInsertHTML
+// alert("done(?)")
+
+// you can't return an array, but you CAN return a string...
+return(sInsertHTML);
+}
+//-->
+</SCRIPT>
+
+<SCRIPT LANGUAGE="vbScript">
+<!--
+'
+Option Explicit
+'
+' resize/reposition opening dialog (during loading)...
+window.ResizeTo 600,370
+window.MoveTo 100,100
+
+
+' --- module level variables ---------------------
+Dim sSelectedClass ' as string
+Dim oSelect ' as object
+
+' --- initialize wmi (method/property) "parameter types" ---
+Dim sTypes(103) ' as string
+Dim iType ' as integer...
+For iType = 0 to 103 ' initialize all...
+sTypes(iType) = "???" ' i.e., unknown...
+Next ' iType
+sTypes(2) = " as Integer" '"SINT16"
+sTypes(3) = " as Integer" '"SINT32"
+sTypes(4) = " as Integer" '"REAL32"
+sTypes(5) = " as Integer" '"REAL64"
+sTypes(8) = " as String" '"String"
+sTypes(11) = " as Boolean" '"BOOLEAN"
+sTypes(13) = " as CIM-Object" '"CIM OBJECT"
+sTypes(16) = " as Integer" '"SINT8"
+sTypes(17) = " as Integer" '"USINT8"
+sTypes(18) = " as Integer" '"USINT16"
+sTypes(19) = " as Integer" '"USINT32"
+sTypes(20) = " as Integer" '"SINT64"
+sTypes(21) = " as Integer" '"USINT64"
+sTypes(101) = " as Date/Time" '"Date/Time"
+sTypes(103) = " as Unicode" '"Char16"
+
+' --- end of module level variables --------------
+
+
+Sub GetClassListing()
+' msgbox("GetClassListing called")
+
+' instantiate wmi...
+Dim oWMI : set oWMI = GetObject("winmgmts:")
+'
+Dim colSubClasses : Set colSubClasses = oWMI.SubclassesOf ' collection
+Dim SubClass ' as object
+Dim iSC ' as integer
+Dim sClassName ' as string
+
+Dim saClasses() ' as string array
+Const cArrayAlloc = 100 ' as integer (allocation block size)
+ReDim saClasses(cArrayAlloc)
+Dim cClasses : cClasses = 0 ' count
+Dim sInsertHTML ' as string
+
+' sInsertHTML = "<select id='selClass' onChange='selChangeEvent()'>"
+' enumerate the "classes" of wmi...
+For Each SubClass in colSubClasses
+' sort out the "win32_" subclasses...
+If InStr(LCase(SubClass.Path_),"win32") > 0 then
+' found a "win32_" subclass, separate out the path info...
+iSC = InStr(SubClass.path_, ":")
+sClassName = Mid(SubClass.path_, iSC + 1)
+' dbPrint "[enum], " & sClassName
+' keep track of how many...
+' sInsertHTML = sInsertHTML & "<option value='" & sClassName & "' >" & sClassName
+saClasses(cClasses) = sClassName ' enter class names in an array (for sorting)
+cClasses = cClasses + 1
+if (cClasses Mod cArrayAlloc) = 0 then _
+ReDim Preserve saClasses(cClasses + cArrayAlloc) ' allocate another block
+' If cClasses => 5 then Exit For ' for debugging only
+End If ' test win32_
+Next ' subclass
+
+' finished with loop, and end select...
+' sInsertHTML = sInsertHTML & "</select>"
+
+' MsgBox(CStr(cClasses))
+ReDim Preserve saClasses(cClasses-1) ' trim excess array entries...
+' MsgBox(CStr(UBound(saClasses)))
+
+' use java to sort the elements, (and create the select/options html)...
+sInsertHTML = jsSortClasses(saClasses)
+
+Dim oList : Set oList = document.all.clsListing
+oList.InnerHTML = sInsertHTML
+
+' tell user it's ok to go ahead and make a selection...
+document.all("pNotify").InnerTEXT = "finished loading wmi classes, " _
+& " go ahead and make a selection... "
+
+' and, show the buttons...
+document.all("btnShow").style.visibility = "visible"
+document.all("btnClose").style.visibility = "visible"
+
+End Sub
+
+
+' --- SELECTION CHANGE EVENT ---------------------
+
+Sub selChangeEvent()
+
+Set oSelect = document.all("selClass")
+sSelectedClass = oSelect.Value
+' msgbox("select change event detected: [" & sSelectedClass) & "]"
+
+document.all("pNotify").InnerTEXT = "Currently selected class is: [" _
+& sSelectedClass & "]... "
+document.all("pInstruct").InnerTEXT = " Click the 'Show WMI Class Doc'" _
+& " button to see the documentation."
+
+End Sub
+
+
+' --- SHOW CLASS DOCUMENTATION -------------------
+
+Sub ShowClassDocumentation()
+Dim sNoClass ' as string
+sNoClass = "You have not selected any class to document. " & vbCrLf & vbCrLf _
+& "Go back to the ListBox, select a class, then click 'show class methods'... "
+
+if isEmpty(sSelectedClass) then
+' an empty variable implies no class selected as yet...
+MsgBox sNoClass, vbExclamation, "Internal Error Detected"
+Else
+' msgbox("Showing Class Documentation for: [" & sSelectedClass & "]")
+
+Dim sFileName
+sFileName = CreateDocPage(sSelectedClass)
+
+' use "window.open" if you would like to see multi-windows at once...
+' window.open sFileName, Null, _
+' "status=no,toolbar=no,menubar=no,location=no "
+
+' use showModalDialog, for one-at-a-time...
+' note: "center" doesn't seem to work for me,
+' i.e., the form is not centered VERTICALLLY, rather it appears at
+' the very top of the screen, so, using Left/Top instead...
+Dim sFeatures
+sFeatures = "dialogLeft:20px; dialogTop:20px; " _
+& "dialogWidth:" & CStr(window.screen.width -30) & "px; " _
+& "dialogHeight:" & CStr(window.screen.height -30) & "px; " _
+& "center:yes; resizable:yes; scroll:yes; status:no; unadorned:no; help:no; "
+showModalDialog sFileName, "", (sFeatures) ' ByVal Features as String
+
+document.all("pNotify").InnerTEXT = _
+" ..if you wish to continue, select another class."
+document.all("pInstruct").InnerTEXT = " "
+End If
+End Sub
+
+
+' --- CREATE DOCUMENTATION PAGE (the HTML file) --
+
+Function CreateDocPage(sClassName)
+
+Dim fso : Set fso = CreateObject("Scripting.FileSystemObject")
+
+' make up an appropriate filename...
+' note: oShell.Environment("PROCESS)("TEMP") returns c:\windows\TEMP under win9x...
+Dim sTmpDir : sTmpDir = CreateObject("WScript.Shell").Environment("PROCESS")("TEMP") & "\"
+Dim sFile : sFile = sTmpDir & sClassName & ".htm"
+Dim oFile : Set oFile = fso.CreateTextFile(sFile, true)
+
+' create wmi (specific) class...
+Dim oWMICls : Set oWMICls = GetObject("winmgmts:[locale=ms_403]!:" & sClassName)
+Dim oClass : Set oClass = oWMICls.SpawnDerivedClass_
+
+' generate an html page with the documentation...
+' (and, shove that intrusive and annoying msIE off to the side)...
+Dim sCaption : sCaption = "Methods and Properties Documentation for " _
+& "Windows Management Instrumentation Class: [" & sClassName & "]" _
+& String(20, Chr(160)) ' note: Chr(160) is the 2nd ansi blank
+
+Dim sLt : sLt = Chr(60)
+Dim sGt : sGt = Chr(62)
+
+oFile.WriteLine "<html><head><title>" & sCaption & "</title>"
+oFile.WriteLine sLt & "SCRIPT LANGUAGE='vbScript'" & sGt
+oFile.WriteLine "<!-- "
+oFile.WriteLine " window.ResizeTo window.screen.width -30, window.screen.height - 30" ' 700,500 " ' (size of documentation window)
+oFile.WriteLine " window.MoveTo 20,20 "
+oFile.WriteLine "//-->"
+oFile.WriteLine sLt & "/SCRIPT" & sGt
+oFile.WriteLine "<style>"
+oFile.WriteLine "td {font: 10pt Arial; color: #666600; backgroundcolor: #AAAAAA; }"
+oFile.WriteLine "p {font: 10pt Arial; color: #DDDDFF; font-weight:}"
+oFile.WriteLine ".mn {font-size: 11pt; color: black; font-weight: bold}"
+oFile.WriteLine "</style>"
+oFile.WriteLine "</head><body scroll='yes' >"
+oFile.WriteLine "<h2>" & sClassName & "</h2><table border=0>"
+
+oFile.WriteLine ShowMethods(oClass) ' generate (html) listing
+oFile.WriteLine ShowProperties(oClass)
+
+oFile.WriteLine "</table></body></html>"
+oFile.close
+
+CreateDocPage = sFile ' set return (filename)
+End Function
+
+
+' --- SHOW THE METHODS OF THIS CLASS -------------
+
+Function ShowMethods(oClass)
+Dim sMList ' as string (listing of methods)...
+Dim colMethods, Method ' as collection, as object...
+Dim sDesOut ' as string (output description)
+Dim sFuncDoc ' as string (function documentation)
+Dim inPars, outPars ' as string (in/out Parameters)
+Dim colParams, iParam ' as collection, as object (parameter item)
+Dim startchar ' as string
+Dim iQualifier ' as qualifier item
+Dim sParamDesc ' as string (parameter description)
+Dim enumVal ' (enumerate supported values)
+Dim oRetParam ' as object
+Dim sCommandDesc ' as string (command description)
+Dim iQual ' as object (qualifier item)
+Dim sCheck ' as string
+Dim iPos ' as integer
+Dim sApi ' as string
+
+' add a header to distinguish methods from properties...
+sMList = "<tr><td colspan='2' align='center' style='font-family: ARIAL BLACK; font-size: 12pt; " _
+& "font-weight: 600; color: Maroon; background-color: Silver;' >" _
+& "---------- CLASS METHODS ---------- </td></tr>"
+
+' --- list the methods of this class ---
+Set colMethods = oClass.Methods_
+
+For Each Method in colMethods
+sDesOut = ""
+sFuncDoc = "<b class=mn>" & Method.Name & "</b>" ' "mn" is method name
+' msgbox(Method.Name)
+
+' input parameters for this given method...
+Set inPars = Method.InParameters
+
+If Not TypeName(inPars)="Nothing" then ' test valid
+Set colParams = inPars.Properties_
+startchar = "("
+
+For Each iParam in colParams
+sFuncDoc = sFuncDoc & startchar _
+& "<b>" & iParam.Name & "</b>" & sTypes(iParam.CIMType) _
+& ", "
+startchar = ""
+' msgbox(iParam.Name)
+
+' get the description(s)...
+Set iQualifier = iParam.Qualifiers_
+sParamDesc = GetDesc(iQualifier)
+' msgbox(sParamDesc)
+If sParamDesc <> "" then ' test empty
+sDesOut = sDesOut & "<b>" & iParam.Name & "</b>=" & GetDesc(iQualifier) & "<br>"
+End If ' test empty
+
+For Each enumVal in iQualifier ' enumerate possible values (if any)...
+If Not LCase(enumVal.Name) = "mappingstrings" then
+sDesOut = sDesOut & GetQualifier(enumVal)
+End If
+Next ' enumVal
+Next ' iParam
+
+sFuncDoc = Left(sFuncDoc, Len(sFuncDoc)-2) & ")" ' adjust html
+end if
+
+' output parameters (if any) for this given method...
+Set outPars = Method.OutParameters
+
+If Not TypeName(outPars) = "Nothing" then
+Set oRetParam = outPars.Properties_.Item("ReturnValue")
+sFuncDoc = "result" & sTypes(oRetParam.CIMType) _
+& " = " & sFuncDoc
+
+End If ' test any outPars...
+
+Set iQualifier = Method.Qualifiers_
+sCommandDesc = GetDesc(iQualifier)
+
+For Each iQual in iQualifier
+If LCase(iQual.Name) = "mappingstrings" then ' if IS mapping string...
+sCheck = GetQualifier(iQual)
+' msgbox(sCheck)
+iPos = InstrRev(sCheck, "=")
+' (was: Befehl wird von folgender API-Funktion bereitgestellt: )...
+sApi = "This method has been derived from the following API-Function: <br>" _
+& Mid(sCheck, iPos+1)
+End If ' test mapstr
+Next ' iQual
+
+sMList = sMList & "<tr><td valign=top>" & sFuncDoc & "<br>" & sDesOut & "</td>" _
+& "<td valign=top>" & Replace(Replace(sCommandDesc, vbCr, ""), vbLf, " ") _
+& "<br>" & sApi & "</td></tr>"
+Next ' method
+
+ShowMethods = sMList ' set return value (method descriptions as html)
+End Function
+
+
+' --- SHOW PROPERTIES OF THIS CLASS --------------
+
+Function ShowProperties(oClass)
+Dim colProps, iProp ' as collection, as object (property item)
+Dim sPropName, sPropDesc, sListProp ' as string
+Dim colQualifiers, iQualifier ' as collection, as object (qualifier item)
+
+' add a header to distinguish methods from properties...
+sListProp = "<tr><td colspan='2' align='center' style='font-family: ARIAL BLACK; font-size: 12pt; " _
+& "font-weight: 600; color: Maroon; background-color: Silver;' >" _
+& "---------- CLASS PROPERTIES ---------- </td></tr>"
+
+' get the properties of this class...
+Set colProps = oClass.properties_
+
+For Each iProp in colProps ' enumerate properties...
+sPropName = iProp.Name
+Set colQualifiers = iProp.Qualifiers_
+
+For Each iQualifier in colQualifiers
+If iQualifier.Name = "Description" then
+sPropDesc = iQualifier.Value
+End If ' if description
+Next ' iqualifier
+
+' set property name into an html table entry...
+sListProp = sListProp & "<tr><td valign=top><b class=mn>" & sPropName & "</b></td><td valign=top>"
+' replace carriage returns and line feeds with appropriate html...
+sListProp = sListProp & Replace(Replace(sPropDesc, vbCr, "<br>"), vbLf, " ") & "</td></tr>"
+next
+
+ShowProperties = sListProp ' set return value (property descriptions as html)
+End Function
+
+
+' --- GET QUALIFIER(S) FOR THIS QUALIFIER(?) -----
+
+function GetQualifier(oQual)
+Dim sRetVal ' as string (return value)
+Dim bIsAnArray ' as boolean
+Dim oContext ' as object
+Dim iElement ' (array element)
+
+On Error Resume Next
+
+Select Case LCase(oQual.Name) ' by-pass inappropriate types...
+Case "description"
+Exit Function
+Case "id"
+Exit Function
+Case "cimtype"
+Exit Function
+Case "in"
+Exit Function
+End Select
+
+sRetVal = "" ' initialize result...
+
+bIsAnArray = (TypeName(oQual.Value)="Variant()")
+
+If Not bIsAnArray then
+sRetVal = sRetVal & oQual.Name & "=" & oQual.Value & "<br>"
+' msgbox("[GetQualifier] retval: " & sRetVal)
+
+Else ' IS an array...
+sRetVal = sRetVal & oQual.Name & " = Array:" & "<br>"
+Set oContext = CreateObject("WBEMScripting.SWBEMNamedValueSet")
+oContext.Add "n1", oQual.Value
+
+For iElement = LBound(oContext("n1")) to UBound(oContext("n1"))
+If oContext("n1")(iElement) <> "" then ' if not empty...
+sRetVal = sRetVal & CStr(iElement) & "=" & oContext("n1")(iElement) & "<br>"
+End If ' not empty
+Next ' ielement
+End If ' not an array
+
+On Error GoTo 0 ' turn off error processing
+
+GetQualifier = sRetVal ' set return result
+End Function
+
+
+' --- GET DESCRIPTION(S) FOR THIS QUALIFIER ------
+
+Function GetDesc(colQualifiers)
+Dim iQual ' (qualifier item)
+Dim sRetVal ' as string
+
+sRetVal = "" ' initialize...
+
+For Each iQual in colQualifiers
+If iQual.Name = "Description" then
+On Error Resume Next
+sRetVal = iQual.Value
+
+If Err.Number <> 0 then ' test error retrieving this value...
+sRetVal = "???"
+Err.Clear
+End If ' error test
+On Error GoTo 0 ' turn off error processing...
+End If ' as description
+Next ' iqual
+
+GetDesc = sRetVal ' set return value (qualifier descriptions)
+End Function
+
+//-->
+</SCRIPT>
+<!-- this style applicable to the First Dialog/Window shown -->
+<style>
+h3 {margin-top: 1px; margin-bottom: 2px; padding-top: 0%; padding-bottom: 0%;
+font-family: verdana; font-size: 12pt; font-weight: 600; color: Navy; }
+body {font-family: verdana; font-size: 10pt; font-weight: 400; color: Navy; }
+</style>
+</HEAD>
+
+<BODY scroll='no' text='navy' bgcolor='silver' onload='GetClassListing()' >
+
+<h3>Selection of WMI Class to Document... </h3>
+<hr size='3px' width='95%' color='Navy'>
+
+<p><u>Explanation of how this dialog works... </u><BR>
+You will find a "list box" below, which will (hopefully) contain a listing of the classes currently available in WMI. The idea here is to select one of those classes, and then click the "Show WMI Class Documentation" button. That will then (hopefully) cause new window to pop up, showing the "built-in" Methods and Properties Documentation for that class... </p>
+
+<p>&nbsp; &nbsp; Select WMI Class here: &nbsp;&nbsp;
+<span id="clsListing" >
+<select id='selClass' onChange='selChangeEvent()'>
+<option value='dummy_value' >placeholder_kindly wait for classes to load
+</select>
+</span>
+</p>
+
+<p id='pNotify' style="color: red; " style='font-weight: 600; '>
+&nbsp;<BR>Kindly WAIT UNTIL THE WMI CLASSES HAVE LOADED... </p>
+<p id='pInstruct' style='color: red; ' >
+&nbsp;<BR></p>
+
+<CENTER>
+<BUTTON id='btnShow' onclick="ShowClassDocumentation()" style='height: 30px; visibility: hidden; '>
+Show WMI Class Documentation</BUTTON>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<BUTTON id='btnClose' onclick="window.close()" style='height: 30px; visibility: hidden; '>Close This Dialog</BUTTON>
+</CENTER>
+
+</BODY>
+</HTML>
