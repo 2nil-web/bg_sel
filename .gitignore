@@ -1,5 +1,6 @@
 *.d
 *.exe
 *.o
+*.ico
 bg_imgsel.debug.hta
 bg_imgsel.hta

@@ -20,6 +20,9 @@
 # ==> Le .iss sera automatiquement mis à jour avec le tag de version et le setup construit.
 
 
+PATH:=/${ARCH}/bin:${PATH}
+PATH:=${PATH}:/c/Program Files/Inkscape/bin
+
 VERS_CMD=git describe --abbrev=0 --tags
 COMMIT_CMD=git rev-parse HEAD
 
@@ -74,7 +77,7 @@ setup : ${TARGET_SETUP}
 deliv : setup
 	@$(call deliv,${VERS},PRERELEASE)
 
-${TARGET} : ${COMPONENTS}
+${TARGET} : ${COMPONENTS} app.ico
 	@mv app.min.hta ${TARGET}
 	@mv app.nomin.hta ${TARGET:hta=debug.hta}
 	@cp app.ico ..
@@ -116,4 +119,10 @@ endif
 	@echo "MINIFYING JS $<"
 	@rm -f $@
 	@${JSMINIFY} $< > $@
+
+%.ico : %.png
+	${MAGICK} convert -background none $< $@
+
+%.ico : %.svg
+	${MAGICK} convert -background none +dither -colors 16 -depth 4 $< $@
 
