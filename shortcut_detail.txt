@@ -1,0 +1,3 @@
+
+target: C:\Windows\System32\mshta.exe $PWD\bg_imgsel.hta
+path: $PWD
