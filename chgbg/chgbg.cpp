@@ -1,8 +1,7 @@
 
-/*
-#include <iostream>
-#include <string>
-*/
+//#include <iostream>
+//#include <string>
+
 #include <windows.h>
 #include <shlwapi.h>
 #include <shobjidl.h>
@@ -29,7 +28,7 @@ int WINAPI WinMain( HINSTANCE , HINSTANCE , LPSTR lpCmdLine, int  ) {
     if (strlen(lpCmdLine)>0) {
       DESKTOP_SLIDESHOW_DIRECTION dir;
 
-      if (strcmp(lpCmdLine, "1")==0 || strcmpi(lpCmdLine, "FORWARD")==0) {
+      if (strcmp(lpCmdLine, "1")==0 || _strcmpi(lpCmdLine, "FORWARD")==0) {
         dir=DESKTOP_SLIDESHOW_DIRECTION::DSD_FORWARD;
         printf("Next");
       } else {

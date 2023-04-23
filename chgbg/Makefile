@@ -26,12 +26,12 @@ CPPFLAGS += -D UNICODE -D _UNICODE
 CPPFLAGS += -D NTDDI_VERSION=0x06020000
 CFLAGS += -Wall -Wextra -std=c2x -pedantic -Os
 CXXFLAGS += -Wall -Wextra -std=c++20 -pedantic -Os
-LDFLAGS  += -static -Os #-mwindows
+LDFLAGS  += -static -Os -mwindows
 LDLIBS   += -lshlwapi -lole32 -luuid -lgdiplus
 
 PREFIX=chgbg
-SRCS=${PREFIX}.c
-OBJS=$(SRCS:.c=.o)
+SRCS=${PREFIX}.cpp
+OBJS=$(SRCS:.cpp=.o)
 OBJS += ${PREFIX}Res.o
 EXEXT=.exe
 TARGETS=${PREFIX}${EXEXT}
