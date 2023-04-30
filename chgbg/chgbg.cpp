@@ -8,6 +8,19 @@
 #include <strsafe.h>
 #include <stringapiset.h>
 
+void win_error() {
+  static TCHAR *lpMsgBuf=NULL;
+  DWORD len;
+
+  if (lpMsgBuf != NULL) LocalFree(lpMsgBuf);
+  len=FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+
+//  lpMsgBuf[len-2]='\0';
+  wprintf(L"%ls\n", (LPTSTR)lpMsgBuf);
+  //MessageBox(NULL, (LPTSTR)lpMsgBuf, L"chgbg", MB_OK);
+}
+
 size_t StringLength(const TCHAR *s) {
   size_t l;
   StringCchLength(s, STRSAFE_MAX_CCH, &l);
@@ -24,11 +37,15 @@ int WINAPI WinMain( HINSTANCE , HINSTANCE , LPSTR lpCmdLine, int  ) {
 
   hr=CoCreateInstance(__uuidof(DesktopWallpaper), NULL, CLSCTX_ALL, IID_PPV_ARGS(&pdw));
 
+//  LPTSTR *av=CommandLineToArgvW(GetCommandLine(), &ac);
+  LPTSTR id[MAX_PATH];
+
   if (SUCCEEDED(hr)) {
-    if (strlen(lpCmdLine)>0) {
+    
+    if (strlen(lpCmdLine) > 0) {
       DESKTOP_SLIDESHOW_DIRECTION dir;
 
-      if (strcmp(lpCmdLine, "1")==0 || _strcmpi(lpCmdLine, "FORWARD")==0) {
+      if (_strcmpi(lpCmdLine, "next")==0) {
         dir=DESKTOP_SLIDESHOW_DIRECTION::DSD_FORWARD;
         printf("Next");
       } else {
@@ -36,25 +53,32 @@ int WINAPI WinMain( HINSTANCE , HINSTANCE , LPSTR lpCmdLine, int  ) {
         printf("Previous");
       }
 
-      puts(" background.");
-      pdw->AdvanceSlideshow(NULL, dir);
-      Sleep(1000);
+      hr=pdw->AdvanceSlideshow(NULL, dir);
+      puts(".");
+
+      if (hr != S_OK) win_error();
+      //Sleep(1000);
     }
 
     unsigned int n;
     if (SUCCEEDED(pdw->GetMonitorDevicePathCount(&n))) {
       unsigned int i;
-      LPTSTR id[MAX_PATH], wp[MAX_PATH];
+      LPTSTR wp[MAX_PATH];
+
+      wprintf(L"monitors info:\n");
+      RECT rc;
 
       for (i=0; i < n; i++) {
         if (SUCCEEDED(pdw->GetMonitorDevicePathAt(i, id))) {
-          wprintf(L"monitor number %d, id: %ls", i, (LPTSTR)*id);
+          wprintf(L"  number %d\n    id: %ls\n", i, (LPTSTR)*id);
 
           if (SUCCEEDED(pdw->GetWallpaper((LPCTSTR)*id, wp))) {
-            wprintf(L", name: %ls", (LPTSTR)*wp);
+            wprintf(L"    name: %ls\n", (LPTSTR)*wp);
           }
 
-          puts(".");
+          if (SUCCEEDED(pdw->GetMonitorRECT ((LPCTSTR)*id, &rc))) {
+            wprintf(L"    rect: left %d, top %d, right %d bottom %d\n", rc.left, rc.top, rc.right, rc.bottom);
+          }
         }
       }
     }

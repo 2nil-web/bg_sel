@@ -167,6 +167,7 @@ function displayButs(val) {
   displayElement('zinBut', val);
   displayElement('znoBut', val);
   displayElement('zoutBut', val);
+  displayElement('nextbg', val);
 
   for (var i=0; i <= nThumb+10; i++) {
     displayElement('inf_bg'+i, val);
@@ -217,6 +218,14 @@ var zout_svg='<path d="m9.82 1.66c-4.51.0-8.16 3.65-8.16 8.16-82e-6 4.50 3.65 8.
 
 var del_svg='<g transform="matrix(.054916 0 0 .054916 -4.4616 -12.112)"><path d="m326.04 513.57h-69.55v-9.44c0-10.53 2.12-19.87 6.35-28.03 4.23-8.15 13.16-18.52 26.78-31.11l12.33-11.17c7.32-6.67 12.68-12.97 16.09-18.88 3.4-5.9 5.1-11.81 5.1-17.72.0-8.99-3.08-16.02-9.24-21.09s-14.77-7.61-25.81-7.61c-10.4.0-21.64 2.15-33.71 6.45s-24.66 10.69-37.76 19.17v-60.5c15.54-5.39 29.73-9.37 42.58-11.94 12.84-2.56 25.24-3.85 37.18-3.85 31.34.0 55.23 6.39 71.67 19.17 16.43 12.78 24.66 31.43 24.66 55.97.0 12.59-2.5 23.86-7.51 33.81-5 9.95-13.55 20.64-25.62 32.08l-12.33 10.98c-8.73 7.96-14.45 14.35-17.14 19.17s-4.04 10.11-4.04 15.89zm-69.55 28.51h69.55v68.59h-69.55z" fill="#fff"/><\/g><circle cx="12" cy="12" r="12" fill="#f44336" stroke-width=".054916"/><g transform="matrix(.054916 0 0 .054916 -4.4616 -12.112)" fill="#fff"><rect transform="matrix(.7071 -.7071 .7071 .7071 -222.62 340.69)" x="267.16" y="307.98" width="65.545" height="262.18"/><rect transform="matrix(.7071 .7071 -.7071 .7071 398.39 -83.312)" x="266.99" y="308.15" width="65.544" height="262.18"/><\/g>';
 
+var next_svg='<g transform="scale(.05)"><circle cx="236.83" cy="236.83" r="236.83" fill="#4abc96"/><path d="m358.08 216.09c-27.011-27.011-54.018-54.022-81.029-81.033-25.56-25.564-65.08 14.259-39.456 39.883 11.009 11.009 22.019 22.019 33.028 33.032h-130.06c-36.225 0-36.543 56.109-0.404 56.109h130.47l-33.252 33.252c-25.564 25.56 14.259 65.08 39.883 39.456 27.011-27.007 54.018-54.014 81.029-81.025 10.844-10.849 10.549-28.915-0.214-39.674z" fill="#fff"/><\/g>';
+
+function NextBG() {
+  var chgbg=fso().GetParentFolderName(window.location.pathname)+"\\chgbg.exe next";
+  wsh().Run(chgbg, 0, false);
+  //wsh().Exec(chgbg);
+}
+
 function svg_button (id, style, click, title, svg) {
     var retval='<button id="'+id+'"  class="image_button" style="'+style+'" onclick="'+click+';" title="'+title+'">'+
       '<svg width="24" height="24">'+svg+'<\/svg>'+
@@ -224,10 +233,11 @@ function svg_button (id, style, click, title, svg) {
   return retval;
 }
 
-var im_buts=svg_button("cnfBut",  "left:  20px", "showConfig()",       "Configuration", cnf_svg)+
-            svg_button("zinBut",  "left:  50px", "zoom(+zoom_factor)", "Zoom in",       zin_svg)+
-            svg_button("znoBut",  "left:  80px", "zoom(0)",            "Default size",  zno_svg)+
-            svg_button("zoutBut", "left: 110px", "zoom(-zoom_factor)", "Zoom out",      zout_svg);
+var im_buts=svg_button("cnfBut",  "left:  20px", "showConfig()",       "Configuration",   cnf_svg)+
+            svg_button("zinBut",  "left:  50px", "zoom(+zoom_factor)", "Zoom in",         zin_svg)+
+            svg_button("znoBut",  "left:  80px", "zoom(0)",            "Default size",    zno_svg)+
+            svg_button("zoutBut", "left: 110px", "zoom(-zoom_factor)", "Zoom out",        zout_svg)+
+            svg_button("nextbg",  "left: 140px", "NextBG()",           "Next background", next_svg);
 
 
 var monits=get_mon_info();
@@ -287,8 +297,10 @@ im_buts+
     remn.onclick=function () {
       BgFileDelete (regKey, imgn, remn);
       srcFile=BgRegExtract(regKey);
-      alert('Moved image '+ srcFile + ' to ' + rejFolder);
+      NextBG();
+      NextBG();
     };
+
     imgn.style.display = 'block';
 //    remn.style.display = 'none';
 
