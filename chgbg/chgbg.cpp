@@ -57,7 +57,7 @@ int WINAPI WinMain( HINSTANCE , HINSTANCE , LPSTR lpCmdLine, int  ) {
       puts(".");
 
       if (hr != S_OK) win_error();
-      //Sleep(1000);
+      Sleep(1000);
     }
 
     unsigned int n;

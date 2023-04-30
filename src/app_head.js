@@ -298,7 +298,7 @@ im_buts+
       BgFileDelete (regKey, imgn, remn);
       srcFile=BgRegExtract(regKey);
       NextBG();
-      NextBG();
+      //NextBG();
     };
 
     imgn.style.display = 'block';
