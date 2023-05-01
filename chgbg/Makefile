@@ -27,7 +27,7 @@ CPPFLAGS += -D NTDDI_VERSION=0x06020000
 CFLAGS += -Wall -Wextra -std=c2x -pedantic -Os
 CXXFLAGS += -Wall -Wextra -std=c++20 -pedantic -Os
 LDFLAGS  += -static -Os -mwindows
-LDLIBS   += -lshlwapi -lole32 -luuid -lgdiplus
+LDLIBS   += -lshlwapi -lole32 -luuid -lgdiplus -lbcrypt
 
 PREFIX=chgbg
 SRCS=${PREFIX}.cpp

@@ -221,7 +221,7 @@ var del_svg='<g transform="matrix(.054916 0 0 .054916 -4.4616 -12.112)"><path d=
 var next_svg='<g transform="scale(.05)"><circle cx="236.83" cy="236.83" r="236.83" fill="#4abc96"/><path d="m358.08 216.09c-27.011-27.011-54.018-54.022-81.029-81.033-25.56-25.564-65.08 14.259-39.456 39.883 11.009 11.009 22.019 22.019 33.028 33.032h-130.06c-36.225 0-36.543 56.109-0.404 56.109h130.47l-33.252 33.252c-25.564 25.56 14.259 65.08 39.883 39.456 27.011-27.007 54.018-54.014 81.029-81.025 10.844-10.849 10.549-28.915-0.214-39.674z" fill="#fff"/><\/g>';
 
 function NextBG() {
-  var chgbg=fso().GetParentFolderName(window.location.pathname)+"\\chgbg.exe next";
+  var chgbg=fso().GetParentFolderName(window.location.pathname)+"\\chgbg.exe -n";
   wsh().Run(chgbg, 0, false);
   //wsh().Exec(chgbg);
 }
