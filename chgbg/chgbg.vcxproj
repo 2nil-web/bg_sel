@@ -147,7 +147,7 @@
     <Image Include="chgbg.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="chgbgRes.rc" />
+    <ResourceCompile Include="chgbg_res.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
