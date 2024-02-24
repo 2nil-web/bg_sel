@@ -111,6 +111,7 @@ mdiv.innerHTML=disp_mon_info();
 
 nm=get_n_active_mon();
 
-if (nm > 1) mdiv.innerHTML+="<br>Il y a donc "+nm+" moniteurss actifs.";
-else mdiv.innerHTML+="<br>Il y a donc "+nm+" moniteurs actif.";
+mdiv.innerHTML+="<br>Il y a donc "+nm+" moniteur";
+if (nm > 1) mdiv.innerHTML+="s actifs.";
+else mdiv.innerHTML+=" actif.";
 

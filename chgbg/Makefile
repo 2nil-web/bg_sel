@@ -45,7 +45,8 @@ gcc : all
 
 g++ : all
 
-MSBUILD='C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\amd64\MSBuild.exe'
+#MSBUILD='C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\amd64\MSBuild.exe'
+MSBUILD=/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe
 
 ifeq ($(shell [ -f ${MSBUILD} ] && echo -n yes || true),yes)
 ifeq (${MAKECMDGOALS},gcc)
@@ -65,6 +66,8 @@ endif
 ifeq (${MSBUILD},)
 ${TARGETS} : ${OBJS}
 else
+# These 2 environment variables cause troubles to the Visual Studio build
+unexport TMP TEMP
 ${TARGETS} : ${PREFIX}.ico version.h ${SRCS}
 	${MSBUILD} ${PREFIX}.sln -p:Configuration=Release
 	cp x64/Release/${TARGETS} .

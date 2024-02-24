@@ -7,3 +7,5 @@ bg_imgsel.hta
 x64
 version.h
 version_check.txt
+.vs
+*.vcxproj.user
