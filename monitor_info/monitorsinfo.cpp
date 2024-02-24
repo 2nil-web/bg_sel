@@ -10,7 +10,8 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR monitor, HDC /*hdc*/, LPRECT /*rect*/, LP
   
   mi.cbSize=sizeof(MONITORINFOEX);
   GetMonitorInfo(monitor, &mi);
-  std::cout << "Monitor " << i++ << ", device name " << mi.szDevice;
+  std::cout << "Monitor " << i++ << ", device name ";
+  std::wcout << mi.szDevice;
   std::cout << " area ("<< mi.rcMonitor.left   << ", " << mi.rcMonitor.top    << ", " << mi.rcMonitor.right  << ", " << mi.rcMonitor.bottom << ")";
   std::cout << ", working area ("<< mi.rcWork.left   << ", " << mi.rcWork.top    << ", " << mi.rcWork.right  << ", " << mi.rcWork.bottom << ")";
   std::cout << ", flag " << mi.dwFlags;
@@ -60,9 +61,13 @@ std::string state_tostring(DWORD st) {
 void DumpDevice(const DWORD num, const std::string DevType, const DISPLAY_DEVICE dd) {
 //  if (dd.StateFlags != 0) {
     std::cout
-      << DevType << " number: " <<  num << ", name: " <<  dd.DeviceName
-      << "\n  model: "  <<  dd.DeviceString
-      << "\n  state: "  <<  state_tostring(dd.StateFlags)
+      << DevType << " number: " <<  num << ", name: ";
+    std::wcout
+      << dd.DeviceName
+      << L"\n  model: "  <<  dd.DeviceString;
+    std::cout
+      << "\n  state: "  <<  state_tostring(dd.StateFlags);
+    std::wcout
       << "\n  ID: "     <<  dd.DeviceID
       << "\n  Key: ..." <<  dd.DeviceKey+42 << std::endl;
 //  }
@@ -85,7 +90,8 @@ void DisplayDevices() {
   }
 }
 
-int WINAPI WinMain (HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/) {
+//int WINAPI WinMain (HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/) {
+int main() {
   DisplayMonitors();
   std::cout << std::endl;
   DisplayDevices();
