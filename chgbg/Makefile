@@ -1,6 +1,8 @@
 
-# Compile en clang64 ou ucrt64 masi pas mingw64
+# Compile en clang64 ou ucrt64 mais pas mingw64
 export PATH:=/clang64/bin:${PATH}
+
+# Pose problème avec Visual Studio
 unexport TMP TEMP
 
 #WITH_CURL=1
