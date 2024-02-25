@@ -1,4 +1,6 @@
 
+# Compile en clang64 ou ucrt64 masi pas mingw64
+export PATH:=/clang64/bin:${PATH}
 unexport TMP TEMP
 
 #WITH_CURL=1

@@ -1,4 +1,6 @@
 
+// Compile en clang64 ou ucrt64 mais pas mingw64
+
 #include <windows.h>
 #include <shellapi.h>
 #include <shlwapi.h>
@@ -22,25 +24,26 @@ void win_error(const char *t) {
   //MessageBox(NULL, (LPTSTR)lpMsgBuf, TEXT(t), MB_OK);
 }
 
-IDesktopWallpaper* pdw=NULL;
 
+IDesktopWallpaper* pdw=nullptr;
 void MonitInfo() {
   unsigned int n;
-  if (SUCCEEDED(pdw->GetMonitorDevicePathCount(&n))) {
+
+  if (pdw->GetMonitorDevicePathCount(&n) == S_OK) {
     unsigned int i;
     LPWSTR  id[MAX_STR], wp[MAX_STR];
     RECT rc;
     wprintf(L"monitors info:\n");
 
     for (i=0; i < n; i++) {
-      if (SUCCEEDED(pdw->GetMonitorDevicePathAt(i, id))) {
+      if (pdw->GetMonitorDevicePathAt(i, id) == S_OK) {
         wprintf(L"  number %d\n    id: %ls\n", i, (LPTSTR)*id);
 
-        if (SUCCEEDED(pdw->GetWallpaper(*id, wp))) {
+        if (pdw->GetWallpaper(*id, wp) == S_OK) {
           wprintf(L"    name: %ls\n", (LPTSTR)*wp);
         }
 
-        if (SUCCEEDED(pdw->GetMonitorRECT (*id, &rc))) {
+        if (pdw->GetMonitorRECT (*id, &rc) == S_OK) {
           wprintf(L"    rect: left %d, top %d, right %d bottom %d\n", rc.left, rc.top, rc.right, rc.bottom);
         }
       }
@@ -63,7 +66,6 @@ size_t StringLength(TCHAR *s) {
 int main(int argc, char **argv) {
   if (FAILED(CoInitialize(NULL))) die("CoInitialize");
   if (FAILED(CoCreateInstance(__uuidof(DesktopWallpaper), NULL, CLSCTX_LOCAL_SERVER, __uuidof(IDesktopWallpaper), (void**)&pdw))) die("CoCreateInstance");
-
   bool ci=false, mi=false;
 
   for (int i=0; i < argc; i++) {
