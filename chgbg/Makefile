@@ -1,4 +1,6 @@
 
+unexport TMP TEMP
+
 #WITH_CURL=1
 include ../header.mk
 

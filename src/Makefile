@@ -1,4 +1,6 @@
 
+unexport TMP TEMP
+
 # Manipulations à faire avant chaque livraison
 # Vérifier les tags du repo :
 #git ls-remote --tags origin

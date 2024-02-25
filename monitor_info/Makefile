@@ -1,4 +1,6 @@
 
+unexport TMP TEMP
+
 CPPFLAGS += -D _WIN32_WINNT=0x0602
 include ../header.mk
 
