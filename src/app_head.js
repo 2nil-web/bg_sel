@@ -27,7 +27,7 @@ isDarkMode=readIniBool(INI_FILE, 'APP', "DarkMode", false);
 isButsOnOver=readIniBool(INI_FILE, 'APP', "ButtonsOnOver", true);
 
 function setWindowPos (start) {
-  var padw=5*nThumb+45.25;
+  var padw=5*nThumb+50;
   var ww=nThumb*img_width+padw;
   if (typeof screen !== "undefined" && ww > screen.width) ww=screen.width;
   var wh=60+Number(img_height);
